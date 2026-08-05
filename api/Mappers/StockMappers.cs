@@ -20,7 +20,8 @@ namespace api.Mappers
                 Purchase = model.Purchase,
                 LastDiv = model.LastDiv,
                 Industry = model.Industry,
-                MarketCap = model.MarketCap
+                MarketCap = model.MarketCap,
+                Comments = model.Comments.Select(c => c.toCommentDto()).ToList()
             };
             
         }

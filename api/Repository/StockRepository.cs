@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Stock;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -38,14 +39,34 @@ namespace api.Repository
 
         }
 
-        public async Task<List<Stock>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(QueryObject query)
         {
-            return await _context.Stocks.ToListAsync();
+            // 1 chuyển DBset thành IQueryable để hoãn thực thi sql
+            var stocks =  _context.Stocks.Include(c => c.Comments).AsQueryable();
+
+            // 2. lọc symbol 
+            if(!string.IsNullOrWhiteSpace(query.Symbol))
+            {
+                stocks = stocks.Where(s => s.Symbol.ToLower().Contains(query.Symbol.ToLower()));
+            }
+            // 3, lọc theo company
+            if(!string.IsNullOrWhiteSpace(query.CompanyName))
+            {
+                stocks = stocks.Where(s => s.CompanyName.ToLower().Contains(query.CompanyName.ToLower()));
+            }
+
+            // 4, thực thi sql
+            return await stocks.ToListAsync();
         }
 
         public async Task<Stock?> GetByIdAsync(int id)
         {
-            return await _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);
+            return await _context.Stocks.Include(c => c.Comments).FirstOrDefaultAsync(s => s.Id == id);
+        }
+
+        public async Task<bool> StockExistingAsync(int id)
+        {
+            return await _context.Stocks.AnyAsync(s => s.Id == id);
         }
 
         public async Task<Stock> UpdateAsync(int id, UpdateStockRequestDto stockDto)
