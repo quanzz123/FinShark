@@ -14,7 +14,7 @@ namespace api.Repository
     public class StockRepository : IStockRepository
     {
         private readonly ApplicationDBContext _context;
-        public StockRepository(ApplicationDBContext context) 
+        public StockRepository(ApplicationDBContext context)
         {
             _context = context;
         }
@@ -29,7 +29,7 @@ namespace api.Repository
         public async Task<Stock?> DeleteAsync(int id)
         {
             var stockExiting = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == id);
-            if(stockExiting == null)
+            if (stockExiting == null)
             {
                 return null;
             }
@@ -42,18 +42,31 @@ namespace api.Repository
         public async Task<List<Stock>> GetAllAsync(QueryObject query)
         {
             // 1 chuyển DBset thành IQueryable để hoãn thực thi sql
-            var stocks =  _context.Stocks.Include(c => c.Comments).AsQueryable();
+            var stocks = _context.Stocks.Include(c => c.Comments).AsQueryable();
 
             // 2. lọc symbol 
-            if(!string.IsNullOrWhiteSpace(query.Symbol))
+            if (!string.IsNullOrWhiteSpace(query.Symbol))
             {
                 stocks = stocks.Where(s => s.Symbol.ToLower().Contains(query.Symbol.ToLower()));
             }
             // 3, lọc theo company
-            if(!string.IsNullOrWhiteSpace(query.CompanyName))
+            if (!string.IsNullOrWhiteSpace(query.CompanyName))
             {
                 stocks = stocks.Where(s => s.CompanyName.ToLower().Contains(query.CompanyName.ToLower()));
             }
+
+
+            //4. sắp xếp
+            if(!string.IsNullOrWhiteSpace(query.SortBy)) {
+                
+                if (query.SortBy.Equals("Symbol", StringComparison.OrdinalIgnoreCase))
+                {
+                    stocks = query.IsDecending
+                        ? stocks.OrderByDescending(s => s.Symbol)
+                        : stocks.OrderBy(s => s.Symbol);
+                }
+            }
+
 
             // 4, thực thi sql
             return await stocks.ToListAsync();
