@@ -24,6 +24,17 @@ namespace api.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Portfolio>().HasKey(p => new { p.AppUserId, p.StockId });
+
+            builder.Entity<Portfolio>()
+                .HasOne(p => p.appUser)
+                .WithMany(u => u.Portfolios)
+                .HasForeignKey(p => p.AppUserId);
+
+            builder.Entity<Portfolio>()
+                .HasOne(p => p.stock)
+                .WithMany(s => s.Portfolios)
+                .HasForeignKey(p => p.StockId);
             List<IdentityRole> roles  = new List<IdentityRole>()
             {
                 new IdentityRole
