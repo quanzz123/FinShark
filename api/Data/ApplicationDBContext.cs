@@ -28,6 +28,7 @@ namespace api.Data
             {
                 new IdentityRole
                 {
+                    Id = "647dba8b-87b6-482e-9774-c4afa611fa80",
                     Name = "Admin",
                     NormalizedName = "ADMIN"
 
@@ -35,6 +36,7 @@ namespace api.Data
 
                 new IdentityRole
                 {
+                    Id = "3cf56bb3-fb14-4b2a-86cf-349ea8c065eb",
                     Name = "User",
                     NormalizedName = "USER"
 

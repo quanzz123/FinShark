@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Account;
+using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace api.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        public AccountController(UserManager<AppUser> userManager)
+        private readonly ITokenServices _tokenServices;
+        public AccountController(UserManager<AppUser> userManager, ITokenServices
+        tokenServices)
         {
             _userManager = userManager;
-
+            _tokenServices = tokenServices;
         }
 
         [HttpPost]
@@ -26,7 +29,7 @@ namespace api.Controllers
         {
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
@@ -35,33 +38,44 @@ namespace api.Controllers
                 {
                     UserName = dto.UserName,
                     Email = dto.Email,
-                   
-                
+
+
                 };
                 var createUser = await _userManager.CreateAsync(appUser, dto.Password);
 
-                if(createUser.Succeeded)
+                if (createUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
-                    if(roleResult.Succeeded)
+                    if (roleResult.Succeeded)
                     {
-                        return Ok("User Created");
-                    } else
+                        return Ok(
+                            new NewUserDto
+                            {
+                                Username = appUser.UserName,
+                                Email = appUser.Email,
+                                Token = _tokenServices.CreateToken(appUser)
+
+
+                            }
+                        );
+                    }
+                    else
                     {
                         return StatusCode(500, roleResult.Errors);
                     }
-                } else
+                }
+                else
                 {
-                     return StatusCode(500, createUser.Errors);
-                    
+                    return StatusCode(500, createUser.Errors);
+
                 }
             }
             catch (Exception e)
             {
-                
-                throw;
+
+                return StatusCode(500, e.Message);
             }
         }
-        
+
     }
 }
