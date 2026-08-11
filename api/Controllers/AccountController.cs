@@ -8,6 +8,7 @@ using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -17,14 +18,37 @@ namespace api.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenServices _tokenServices;
+        private readonly SignInManager<AppUser> _signInManager;
         public AccountController(UserManager<AppUser> userManager, ITokenServices
-        tokenServices)
+        tokenServices, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenServices = tokenServices;
+            _signInManager = signInManager;
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
+            if(user == null) return Unauthorized("Invalid username or password");
+            var isPasswordCorrect = await _signInManager.CheckPasswordSignInAsync(user, dto.Password,false);
+            if(!isPasswordCorrect.Succeeded) return Unauthorized("Invalid username or password");
 
-        [HttpPost]
+            return Ok(
+                new NewUserDto
+                {
+                    Username = user.UserName,
+                    Email = user.Email,
+                    Token = _tokenServices.CreateToken(user)
+                }
+            );
+        }
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             try
