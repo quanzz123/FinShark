@@ -137,3 +137,17 @@ Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.
 Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Newtonsoft.Json.dll
 Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Newtonsoft.Json.Bson.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.Bcl.Cryptography.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+Z:\Workspace2026\WEB PROJECT\finshark\api\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
