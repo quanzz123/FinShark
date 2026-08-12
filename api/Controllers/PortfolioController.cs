@@ -72,5 +72,31 @@ namespace api.Controllers
 
             
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePortfolio(string symbol)
+        {
+            // lấy thông tin user hiện tại
+            var username = User.GetUserName();
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            // lấy Portfolio của user hiện tại
+            var userPortfolio = await _portfolioRepository.GetUserPortfolio(appUser);
+            if(userPortfolio == null || !userPortfolio.Any())
+            {
+                return NotFound("User portfolio not found.");
+            }
+            // kiểm tra xem stock có tồn tại trong portfolio của user hay không
+            var filterPortfolio = userPortfolio.FirstOrDefault(s => s.Symbol.ToLower() == symbol.ToLower());
+            if(filterPortfolio == null)
+            {
+                return NotFound("Stock not found in the portfolio.");
+            }
+
+            //xóa stock khỏi portfolio
+            await _portfolioRepository.DeletePortfolio(symbol, appUser);
+            return Ok();
+        }
     }
 }
