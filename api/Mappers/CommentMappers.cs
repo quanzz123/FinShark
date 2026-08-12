@@ -17,6 +17,7 @@ namespace api.Mappers
                 Title = model.Title,
                 Content = model.Content,
                 CreateOn = model.CreateOn,
+                createdBy = model.AppUser.UserName,
                 StockID = model.StockID
             };
         }
