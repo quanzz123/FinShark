@@ -12,6 +12,6 @@ namespace api.Helpers
         public string? SortBy { get; set; }  = null; // tên cột muốn sắp xếp 
         public bool IsDecending { get; set; } = false; //cho biết tăng-true, giảm-false
         public int PageNumber { get; set; } = 1; // cho biết số trang cần chia
-        public int PageSize { get; set; } // cho biết số phần tử trong 1 trang
+        public int PageSize { get; set; } = 20; // cho biết số phần tử trong 1 trang
     }
 }
