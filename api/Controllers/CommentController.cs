@@ -7,9 +7,9 @@ using api.Extensions;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 
 namespace api.Controllers
 {
@@ -20,22 +20,25 @@ namespace api.Controllers
         private readonly ICommentRepository _commentRepo;
         private readonly IStockRepository _stockRepo;
         private readonly UserManager<AppUser> _userManager;
+
         public CommentController(ICommentRepository commentRepo, IStockRepository stockRepo, UserManager<AppUser> userManager)
         {
             _commentRepo = commentRepo;
             _stockRepo = stockRepo;
             _userManager = userManager;
-
         }
+
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var comments = await _commentRepo.GetAllAsync();
-            var CommentDto = comments.Select(s => s.toCommentDto());
-            return Ok(CommentDto);
+            var commentDto = comments.Select(s => s.toCommentDto());
+            return Ok(commentDto);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var comment = await _commentRepo.GetByIdAsync(id);
@@ -44,58 +47,67 @@ namespace api.Controllers
                 return NotFound();
             }
             return Ok(comment.toCommentDto());
-
         }
 
-        [HttpPost("{stockId}")]
+        [HttpPost("{stockId:int}")]
+        [Authorize]
         public async Task<IActionResult> Create([FromRoute] int stockId, [FromBody] CreateCommnentDto commentDo)
         {
-            var existingStock = await _stockRepo.StockExistingAsync(stockId);
-            if (existingStock == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await _stockRepo.StockExistingAsync(stockId))
             {
-                return NotFound();
+                return BadRequest("Stock does not exist");
             }
 
             var username = User.GetUserName();
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+
             var appUser = await _userManager.FindByNameAsync(username);
             if (appUser == null)
             {
                 return Unauthorized();
             }
+
             var commentModel = commentDo.ToCommentFromCreateDto(stockId);
             commentModel.AppUserId = appUser.Id;
             await _commentRepo.CreateAsync(commentModel);
             return CreatedAtAction(nameof(GetById), new { id = commentModel.Id }, commentModel.toCommentDto());
-
         }
+
         [HttpPut]
-        [Route("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, UpdateCommentDto dto)
+        [Route("{id:int}")]
+        [Authorize]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var commentModel = await _commentRepo.UpdateAsync(id, dto.ToCommentFromUpdateDto());
             if (commentModel == null)
             { 
-                return NotFound();
+                return NotFound("Comment not found");
             }
 
-
             return Ok(commentModel.toCommentDto());
-
         }
     
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var commentModel = await _commentRepo.DeleteAsync(id);
             if (commentModel == null)
             {
-                return NotFound();
+                return NotFound("Comment does not exist");
             }
 
             return NoContent();
-        
         }
-            
     }
 }

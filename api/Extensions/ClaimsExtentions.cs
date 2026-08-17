@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace api.Extensions
 {
     public static class ClaimsExtentions
     {
-        public static string GetUserName(this ClaimsPrincipal user)
+        public static string? GetUserName(this ClaimsPrincipal user)
         {
-            return user.Claims.SingleOrDefault(x => x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname")).Value;
+            return user.Claims.SingleOrDefault(x => 
+                x.Type.Equals("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname") ||
+                x.Type.Equals(ClaimTypes.GivenName) ||
+                x.Type.Equals("given_name"))?.Value;
         }
     }
 }
